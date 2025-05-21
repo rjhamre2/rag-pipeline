@@ -4,32 +4,33 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
 from langchain.chains import RetrievalQA
+from get_vectorstore import get_vector_store
+from model_list import lightweight_ollama_models
+from model_list import vectorDB_Path, chunk_sizes, chunk_overlaps, embeddings_models, vector_store_type
 
 def build_qa_chain():
-    # Load and split documents
-    loader = TextLoader("faqs.txt")
-    documents = loader.load()
+    chunk_size = chunk_sizes[0]
+    chunk_overlap = chunk_overlaps[1]
+    embedding_model = "all-minilm-l6-v2"
+    vector_store = vector_store_type[0]
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    chunks = splitter.split_documents(documents)
+    llmModel = lightweight_ollama_models[0]
+    persist_directory = f"{vectorDB_Path}{chunk_size}_{chunk_overlap}_{embedding_model}_{vector_store}_db"
+    llm = Ollama(model=llmModel['name'],
+            temperature=0,
+            num_ctx =2048,
+            num_thread=8,  # Match to CPU cores
+            repeat_penalty=1.1,
+            top_k=40,
+            top_p=0.9,)
 
-    # Create embeddings and vector store
-    embedding = OllamaEmbeddings(model="llama2:13b")
-    vectorstore = Chroma.from_documents(
-        documents=chunks,
-        embedding=embedding,
-        persist_directory="./chroma_db"
-    )
-
-    retriever = vectorstore.as_retriever()
-
-    # Connect retriever to LLM
-    llm = Ollama(model="llama2:13b")
-
+    vectorstore = get_vector_store(embedding_name=embedding_model,
+                                store_name=vector_store, 
+                                persist_directory=persist_directory)
     qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        retriever=retriever,
-        return_source_documents=False
-    )
+                                llm=llm,
+                                retriever=vectorstore.as_retriever(search_kwargs={"k": 1}),
+                                chain_type="stuff",
+                                return_source_documents=False)
 
     return qa_chain
