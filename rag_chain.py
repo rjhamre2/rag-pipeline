@@ -17,7 +17,7 @@ def build_qa_chain():
     llmModel = lightweight_ollama_models[0]
     persist_directory = f"{vectorDB_Path}{chunk_size}_{chunk_overlap}_{embedding_model}_{vector_store}_db"
     llm = Ollama(model=llmModel['name'],
-            temperature=0,
+            temperature=0.7,
             num_ctx =2048,
             num_thread=8,  # Match to CPU cores
             repeat_penalty=1.1,
