@@ -17,7 +17,7 @@ class Question(BaseModel):
 
 origins = [
     "http://localhost:3000",  # Example: React frontend running locally
-    "https://your-frontend-domain.com",  # Example: Deployed frontend
+    "https://nimbleai.in",  # Example: Deployed frontend
 ]
 
 # Add CORS middleware
@@ -31,7 +31,7 @@ app.add_middleware(
 
 
 vector_store = "faiss"
-embedding_name = "all-minilm-l6-v2"
+embedding_name = "nomic-embed-text"
 persist_directory = f"{vectorDB_Path}{embedding_name}_{vector_store}_db"
 
 vectorstore = get_vector_store(embedding_name=embedding_name,

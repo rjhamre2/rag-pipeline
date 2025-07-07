@@ -2,7 +2,6 @@ from typing import Literal, Union
 from langchain_community.vectorstores import FAISS, Chroma, LanceDB, Weaviate
 #from langchain_community.vectorstores import Weaviate #docker setup needed
 from langchain_community.embeddings import OllamaEmbeddings, HuggingFaceEmbeddings
-z
 #import weaviate #docker setup needed
 from langchain_core.vectorstores import VectorStore
 from embedding_generator import get_embedding_model
@@ -103,7 +102,7 @@ langchain_docs = [
     for question, answer in faq_data.items()
 ]
 # Step 3: Generate embeddings
-embedding_model = "all-minilm-l6-v2"
+embedding_model = "nomic-embed-text"
 vector_store = "faiss"
 
 persist_directory = f"{vectorDB_Path}{embedding_model}_{vector_store}_db"
